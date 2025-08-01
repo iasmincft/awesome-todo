@@ -38,34 +38,15 @@
 </template>
 
 <script>
+  import { useMyStore } from 'pinia'
+
 export default {
-  data() {
-    return {
-      tasks: [
-        { 
-          id: 1, 
-          name: 'Buy groceries', 
-          completed: false, 
-          dueDate: '20/01/2025', 
-          dueTime: '18:00' 
-        },
-        { 
-          id: 2, 
-          name: 'Walk the dog', 
-          completed: false, 
-          dueDate: '21/02/2025', 
-          dueTime: '19:00' 
-        },
-        { 
-          id: 3, 
-          name: 'Finish project report', 
-          completed: false, 
-          dueDate: '22/03/2025', 
-          dueTime: '20:00' 
-        }
-      ]
-    };
-  },
+
+  computed: {
+    tasks() {
+      return this.$store.state.tasks ['tasks/tasks']
+    }
+  }
 
 }
 </script>
