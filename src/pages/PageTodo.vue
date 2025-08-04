@@ -9,6 +9,7 @@
         :key="key"
         :task="task"
         :task-id="key" 
+        @toggle-task="tasksStore.toggleCompleted"
       />
 
     </q-list>
@@ -16,10 +17,10 @@
 </template>
 
 <script setup>
-  import { useTasksStore } from 'src/stores/tasks'; // Importa o store Pinia
-  import TaskComponent from 'src/components/Tasks/Task.vue'; // Importa o novo componente Task
+  import { useTasksStore } from 'stores/tasks'; // Correct path to your Pinia store
+  import TaskComponent from 'src/components/Tasks/Task.vue'; // Correct path to your Task.vue component
 
-  const tasksStore = useTasksStore(); // Instancia o store
+  const tasksStore = useTasksStore();
 </script>
 
 <style>

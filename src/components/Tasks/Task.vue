@@ -1,11 +1,12 @@
 <template>
   <q-item 
-    @click="task.completed = !task.completed"
+    @click="toggleCompleted(taskId)"
     :class="!task.completed ? 'bg-orange-1' : 'bg-green-1'"
     clickable
     v-ripple>
     <q-item-section side top>
-      <q-checkbox v-model="task.completed" />
+      <q-checkbox :model-value="task.completed"
+      @update:model-value="toggleCompleted(taskId)" />
     </q-item-section>
 
     <q-item-section>
@@ -40,17 +41,26 @@
 </template>
 
 <script setup>
+
   // Define as props que este componente Task.vue receberá
   const props = defineProps({
     task: {
       type: Object,
       required: true
     },
-    taskId: { // Renomeado de 'id' para 'taskId' para evitar conflito com 'id' interno da task se existir
+    taskId: {
       type: String,
       required: true
     }
   });
+
+  // Define os eventos que este componente pode emitir
+  const emit = defineEmits(['toggle-task']); // Declaramos o evento 'toggle-task'
+
+  // Função para emitir o evento quando a tarefa é clicada/checkbox alterado
+  const toggleCompleted = (id) => {
+    emit('toggle-task', id); // Emitimos o evento com o taskId
+  };
 </script>
 
 <style scoped>

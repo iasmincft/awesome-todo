@@ -31,9 +31,9 @@ export const useTasksStore = defineStore('tasks', {
   },
   actions: {
     toggleCompleted(id) {
-      const task = this.items.find(t => t.id === id);
-      if (task) {
-        task.completed = !task.completed; 
+      // Acesse a tarefa diretamente usando o ID como chave do objeto
+      if (this.items[id]) { 
+        this.items[id].completed = !this.items[id].completed; 
       }
     },
   }
