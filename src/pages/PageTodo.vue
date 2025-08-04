@@ -4,50 +4,24 @@
       separator
       bordered>
 
-      <q-item
-        v-for="task in tasks"
-        :key="task.id"
-        @click="task.completed = !task.completed"
-        :class="!task.completed ? 'bg-orange-1' : 'bg-green-1'"
-        clickable
-        v-ripple
-      >
-        <q-item-section side top>
-          <q-checkbox v-model="task.completed"></q-checkbox>
-        </q-item-section>
+      <TaskComponent
+        v-for="(task, key) in tasksStore.tasks"
+        :key="key"
+        :task="task"
+        :task-id="key" 
+      />
 
-        <q-item-section>
-          <q-item-label :class="{'text-strikethrough': task.completed}">{{ task.name }}</q-item-label>
-        </q-item-section>
-
-        <q-item-section side>
-          <div class="row">
-            <div class="column justify-center">
-              <q-icon name="event" size="18px" class="q-mr-xs"/>
-            </div>
-            <div class="column">
-              <q-item-label class="row justify-end" caption>{{ task.dueDate }}</q-item-label>
-              <q-item-label class="row justify-end" caption><small>{{ task.dueTime }}</small></q-item-label>
-            </div>
-          </div>
-        </q-item-section>
-      </q-item>
-      
     </q-list>
   </q-page>
 </template>
 
-<script>
-  import { useMyStore } from 'pinia'
+<script setup>
+  import { useTasksStore } from 'src/stores/tasks'; // Importa o store Pinia
+  import TaskComponent from 'src/components/Tasks/Task.vue'; // Importa o novo componente Task
 
-export default {
-
-  computed: {
-    tasks() {
-      return this.$store.state.tasks ['tasks/tasks']
-    }
-  }
-
-}
+  const tasksStore = useTasksStore(); // Instancia o store
 </script>
 
+<style>
+/* Adicione estilos específicos para PageTodo.vue aqui se necessário */
+</style>
