@@ -8,14 +8,14 @@
 
         <q-card-section class="q-pa-md">
             <q-form @submit.prevent="addTask" class="q-gutter-md">
-                <q-input v-model="newTask.name" label="Nome da tarefa" filled clearable
+                <q-input autofocus v-model="newTask.name" label="Nome da tarefa" filled clearable
                     :rules="[val => !!val || 'Field is required']" />
                 <q-input filled v-model="newTask.dueDate" label="Data" mask="##/##/####">
                     <template v-slot:append>
                         <q-icon name="event" class="cursor-pointer">
                             <q-popup-proxy cover transition-show="scale" transition-hide="scale"
                                 @before-show="setDefaultDate">
-                                <q-date v-model="newTask.dueDate" mask="DD/MM/YYYY">
+                                <q-date v-model="newTask.dueDate" mask="DD/MM/YYYY" color="secondary" >
                                     <div class="row items-center justify-end">
                                         <q-btn v-close-popup label="Fechar" color="negative" flat />
                                     </div>
@@ -24,11 +24,16 @@
                         </q-icon>
                     </template>
                 </q-input>
-                <q-input filled v-model="newTask.dueTime" label="Hora" mask="##:##">
+
+                <div class="row justify-end" >
+                    <q-toggle v-model="showTimeField" label="Add time" label-left color="accent" v-if="newTask.dueDate" />
+                </div>
+                
+                <q-input filled v-model="newTask.dueTime" label="Hora" mask="##:##" v-if="showTimeField" > 
                     <template v-slot:append>
                         <q-icon name="access_time" class="cursor-pointer">
-                            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                                <q-time v-model="newTask.dueTime">
+                            <q-popup-proxy cover transition-show="scale" transition-hide="scale" >
+                                <q-time v-model="newTask.dueTime" color="secondary">
                                     <div class="row items-center justify-end">
                                         <q-btn v-close-popup label="Fechar" color="negative" flat />
                                     </div>
@@ -38,7 +43,7 @@
                     </template>
                 </q-input>
 
-                <q-card-actions align="right">
+                <q-card-actions class="row justify-end">
                     <q-btn type="submit" label="Adicionar Tarefa" color="primary" v-close-popup />
                 </q-card-actions>
             </q-form>
@@ -54,6 +59,7 @@ import { useTasksStore } from 'src/stores/tasks';
 
 
 const tasksStore = useTasksStore();
+const showTimeField = ref(false);
 const newTask = ref({
     name: '',
     dueDate: '',
@@ -79,6 +85,8 @@ function setDefaultDate() {
         newTask.value.dueDate = `${day}/${month}/${year}`;
     }
 }
+
+
 </script>
 
 <style></style>

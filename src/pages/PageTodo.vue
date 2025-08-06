@@ -1,11 +1,12 @@
 <template>
   <q-page class="q-pa-md">
     <q-list 
+      v-if="Object.keys(tasksStore.tasks).length"
       separator
       bordered>
 
       <TaskComponent
-        v-for="(task, key) in tasksStore.tasks"
+        v-for="(task, key) in tasksStore.sortedTasks"
         :key="key"
         :task="task"
         :task-id="key" 
@@ -14,6 +15,27 @@
       />
 
     </q-list>
+
+     <div 
+      v-else
+      class="absolute-center no-tasks-message column items-center">
+      <q-icon name="self_improvement" size="100px" color="secondary" />
+      <div class="text-h6 text-secondary q-mt-md text-center">
+        No tasks yet!
+      </div>
+    </div>
+
+    <div class="absolute-bottom q-pa-lg q-pr-xl row items-center justify-end">
+      
+      <div 
+        v-if="!Object.keys(tasksStore.tasks).length"
+        class="row items-center q-mr-xl">
+        <div class="text-subtitle1 text-accent q-mr-l">
+          Plan something extraordinary
+        </div>
+        <q-icon name="keyboard_double_arrow_right" size="40px" color="accent" />
+      </div>
+    </div>
 
     <div class="absolute-bottom text-right q-pa-lg ">
       <q-btn
@@ -29,7 +51,9 @@
     <q-dialog v-model="showAddTask">
       <AddTask/>
     </q-dialog>
+
     
+
   </q-page>
 </template>
 
