@@ -17,7 +17,7 @@
 
     <div class="absolute-bottom text-right q-pa-lg ">
       <q-btn
-      @click="showAddTask = true"
+        @click="showAddTask = true"
         round
         dense
         color="primary"
@@ -42,7 +42,8 @@
 
   const tasksStore = useTasksStore();
   const $q = useQuasar();
-  const showAddTask = ref(true);
+  const showAddTask = ref(false);
+  
 
   const promptToDelete = (id) => {
     $q.dialog({

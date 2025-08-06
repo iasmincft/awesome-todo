@@ -1,4 +1,5 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
+import { uid } from 'quasar';
 
 const initialTasks = {
       'ID1': {
@@ -60,8 +61,19 @@ export const useTasksStore = defineStore('tasks', {
       } else {
         console.warn(`tasks.js Store: Tentativa de excluir tarefa inexistente com ID ${id}.`);
       }
+    },
+    addTask(taskData) {
+      if (taskData.name.trim()) {
+        const newId = uid();
+        this.items[newId] = {
+            name: taskData.name,
+            completed: false,
+            dueDate: taskData.dueDate,
+            dueTime: taskData.dueTime
+        };
+        this.saveToLocalStorage();
+      }
     }
-
   }
 })
 

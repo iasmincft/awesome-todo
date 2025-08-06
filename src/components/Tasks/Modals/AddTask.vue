@@ -8,11 +8,13 @@
 
         <q-card-section class="q-pa-md">
             <q-form @submit.prevent="addTask" class="q-gutter-md">
-                <q-input v-model="newTask.name" label="Nome da tarefa" filled clearable />
+                <q-input v-model="newTask.name" label="Nome da tarefa" filled clearable
+                    :rules="[val => !!val || 'Field is required']" />
                 <q-input filled v-model="newTask.dueDate" label="Data" mask="##/##/####">
                     <template v-slot:append>
                         <q-icon name="event" class="cursor-pointer">
-                            <q-popup-proxy cover transition-show="scale" transition-hide="scale" @before-show="setDefaultDate">
+                            <q-popup-proxy cover transition-show="scale" transition-hide="scale"
+                                @before-show="setDefaultDate">
                                 <q-date v-model="newTask.dueDate" mask="DD/MM/YYYY">
                                     <div class="row items-center justify-end">
                                         <q-btn v-close-popup label="Fechar" color="negative" flat />
@@ -49,7 +51,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useTasksStore } from 'src/stores/tasks';
-import { uid } from 'quasar';
+
 
 const tasksStore = useTasksStore();
 const newTask = ref({
@@ -60,19 +62,11 @@ const newTask = ref({
 });
 
 function addTask() {
-    if (newTask.value.name.trim()) {
-        const newId = uid();
-        tasksStore.items[newId] = {
-            name: newTask.value.name,
-            dueDate: newTask.value.dueDate,
-            dueTime: newTask.value.dueTime,
-            completed: false
-        };
+    tasksStore.addTask(newTask.value);
 
-        newTask.value.name = '';
-        newTask.value.dueDate = '';
-        newTask.value.dueTime = '';
-    }
+    newTask.value.name = '';
+    newTask.value.dueDate = '';
+    newTask.value.dueTime = '';
 }
 
 function setDefaultDate() {
