@@ -1,8 +1,6 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 
-export const useTasksStore = defineStore('tasks', {
-  state: () => ({
-    items: {
+const initialTasks = {
       'ID1': {
         name: 'Go to shop',
         completed: false,
@@ -21,8 +19,20 @@ export const useTasksStore = defineStore('tasks', {
         dueDate: '2019/05/14',
         dueTime: '16:00'
       }	
+}
+
+export const useTasksStore = defineStore('tasks', {
+  state: () => {
+    let tasksFromLocalStorage = null;
+    try {
+      tasksFromLocalStorage = JSON.parse(localStorage.getItem('awesome-todo-tasks'));
+    } catch (e) {
+      console.error("Erro ao carregar tarefas do localStorage:", e);
     }
-  }),
+    return {
+      items: tasksFromLocalStorage || initialTasks
+    };
+  },
   getters: {
     tasks: (state) => {
       return state.items;
@@ -30,12 +40,28 @@ export const useTasksStore = defineStore('tasks', {
     
   },
   actions: {
+    saveToLocalStorage() {
+      localStorage.setItem('awesome-todo-tasks', JSON.stringify(this.items));
+      console.log('Estado da store salvo no localStorage.');
+    },
     toggleCompleted(id) {
-      // Acesse a tarefa diretamente usando o ID como chave do objeto
       if (this.items[id]) { 
         this.items[id].completed = !this.items[id].completed; 
+      } else {
+        console.warn(`Task with ID ${id} not found in store.`);
       }
     },
+    deleteTask(id) {
+      console.log('tasks.js Store: deleteTask action chamada para ID:', id);
+      if (this.items[id]) {
+        // Esta linha é a mais importante para a reatividade da exclusão
+        delete this.items[id]; 
+        console.log('tasks.js Store: Tarefa excluída. Estado atualizado:', this.items);
+      } else {
+        console.warn(`tasks.js Store: Tentativa de excluir tarefa inexistente com ID ${id}.`);
+      }
+    }
+
   }
 })
 
