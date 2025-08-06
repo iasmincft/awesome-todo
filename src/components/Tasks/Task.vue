@@ -12,10 +12,10 @@
     <q-item-section>
       <q-item-label
         :class="{ 'text-strikethrough' : task.completed }">
-        {{ task.name }} {{ taskId }} </q-item-label>
+        {{ task.name }}</q-item-label>
     </q-item-section>
 
-    <q-item-section side>
+    <q-item-section v-if="task.dueDate" side>
         <div class="row">
             <div class="column justify-center">
                 <q-icon 
@@ -37,6 +37,26 @@
             </div>
         </div>
     </q-item-section>
+
+    <q-item-section side>
+      <q-btn 
+      @click.stop="emit('edit-task', taskId)" 
+        flat 
+        round 
+        dense 
+        color="accent" 
+        icon="edit" />
+    </q-item-section>
+
+    <q-item-section side>
+      <q-btn 
+      @click.stop="emit('delete-task', taskId)" 
+        flat 
+        round 
+        dense 
+        color="negative" 
+        icon="delete" />
+    </q-item-section>
   </q-item>
 </template>
 
@@ -55,12 +75,13 @@
   });
 
   // Define os eventos que este componente pode emitir
-  const emit = defineEmits(['toggle-task']); // Declaramos o evento 'toggle-task'
+  const emit = defineEmits(['toggle-task', 'delete-task']); // Declaramos o evento 'toggle-task'
 
   // Função para emitir o evento quando a tarefa é clicada/checkbox alterado
   const toggleCompleted = (id) => {
     emit('toggle-task', id); // Emitimos o evento com o taskId
   };
+  
 </script>
 
 <style scoped>
