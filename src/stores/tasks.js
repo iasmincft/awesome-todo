@@ -1,5 +1,5 @@
-import { defineStore, acceptHMRUpdate } from 'pinia'
-import { uid } from 'quasar';
+import { defineStore, acceptHMRUpdate } from "pinia";
+import { uid } from "quasar";
 
 const initialTasks = {
   /*
@@ -22,18 +22,20 @@ const initialTasks = {
         dueTime: '16:00'
       }	
         */
-}
+};
 
-export const useTasksStore = defineStore('tasks', {
+export const useTasksStore = defineStore("tasks", {
   state: () => {
     let tasksFromLocalStorage = null;
     try {
-      tasksFromLocalStorage = JSON.parse(localStorage.getItem('awesome-todo-tasks'));
+      tasksFromLocalStorage = JSON.parse(
+        localStorage.getItem("awesome-todo-tasks")
+      );
     } catch (e) {
       console.error("Erro ao carregar tarefas do localStorage:", e);
     }
     return {
-      items: tasksFromLocalStorage || initialTasks
+      items: tasksFromLocalStorage || initialTasks,
     };
   },
   getters: {
@@ -42,44 +44,48 @@ export const useTasksStore = defineStore('tasks', {
     },
     // Novo getter para retornar as tarefas ordenadas
     sortedTasks: (state) => {
-      const tasksArray = Object.entries(state.items).map(([id, task]) => ({ id, ...task }));
-      
+      const tasksArray = Object.entries(state.items).map(([id, task]) => ({
+        id,
+        ...task,
+      }));
+
       return tasksArray.sort((a, b) => {
-        const hasDueDateA = !!a.dueDate && !!a.dueTime;
-        const hasDueDateB = !!b.dueDate && !!b.dueTime;
-
-        // Se ambos não têm data/hora, não os move
-        if (!hasDueDateA && !hasDueDateB) {
-          return 0;
+        // Prioridade 1: Mover tarefas sem data para o final da lista.
+        if (!a.dueDate && !b.dueDate) {
+          return 0; // Se ambos não têm data, mantém a ordem original.
+        }
+        if (!a.dueDate) {
+          return 1; // Se A não tem data, B vem primeiro.
+        }
+        if (!b.dueDate) {
+          return -1; // Se B não tem data, A vem primeiro.
         }
 
-        // Se apenas B tem data/hora, B vem primeiro
-        if (!hasDueDateA) {
-          return 1;
-        }
-        
-        // Se apenas A tem data/hora, A vem primeiro
-        if (!hasDueDateB) {
-          return -1;
-        }
+        // Prioridade 2: Converter a data e a hora para objetos Date para comparação.
+        // Se a hora estiver faltando, usamos 'T00:00' como padrão.
+        const dateA = new Date(
+          a.dueDate.split("/").reverse().join("-") +
+            (a.dueTime ? "T" + a.dueTime : "T00:00")
+        );
+        const dateB = new Date(
+          b.dueDate.split("/").reverse().join("-") +
+            (b.dueTime ? "T" + b.dueTime : "T00:00")
+        );
 
-        // Se ambos têm data/hora, compare-os
-        const dateA = new Date(a.dueDate.split('/').reverse().join('-') + 'T' + a.dueTime);
-        const dateB = new Date(b.dueDate.split('/').reverse().join('-') + 'T' + b.dueTime);
-
+        // Comparação final
         return dateA - dateB;
       });
-    }
+    },
   },
   actions: {
     saveToLocalStorage() {
-      localStorage.setItem('awesome-todo-tasks', JSON.stringify(this.items));
-      console.log('Estado da store salvo no localStorage.');
+      localStorage.setItem("awesome-todo-tasks", JSON.stringify(this.items));
+      console.log("Estado da store salvo no localStorage.");
     },
     // Altera o status de conclusão da tarefa
     toggleCompleted(id) {
-      if (this.items[id]) { 
-        this.items[id].completed = !this.items[id].completed; 
+      if (this.items[id]) {
+        this.items[id].completed = !this.items[id].completed;
       } else {
         console.warn(`Task with ID ${id} not found in store.`);
       }
@@ -87,12 +93,17 @@ export const useTasksStore = defineStore('tasks', {
     },
     // Deleta os itens da lista
     deleteTask(id) {
-      console.log('tasks.js Store: deleteTask action chamada para ID:', id);
+      console.log("tasks.js Store: deleteTask action chamada para ID:", id);
       if (this.items[id]) {
-        delete this.items[id]; 
-        console.log('tasks.js Store: Tarefa excluída. Estado atualizado:', this.items);
+        delete this.items[id];
+        console.log(
+          "tasks.js Store: Tarefa excluída. Estado atualizado:",
+          this.items
+        );
       } else {
-        console.warn(`tasks.js Store: Tentativa de excluir tarefa inexistente com ID ${id}.`);
+        console.warn(
+          `tasks.js Store: Tentativa de excluir tarefa inexistente com ID ${id}.`
+        );
       }
       this.saveToLocalStorage();
     },
@@ -101,17 +112,30 @@ export const useTasksStore = defineStore('tasks', {
       if (taskData.name.trim()) {
         const newId = uid();
         this.items[newId] = {
-            name: taskData.name,
-            completed: false,
-            dueDate: taskData.dueDate,
-            dueTime: taskData.dueTime
+          name: taskData.name,
+          completed: false,
+          dueDate: taskData.dueDate,
+          dueTime: taskData.dueTime,
         };
         this.saveToLocalStorage();
       }
-    }
-  }
-})
+    },
+    updateTask(updatedTask) {
+      if (this.items[updatedTask.id]) {
+        this.items[updatedTask.id] = {
+          name: updatedTask.name,
+          completed: updatedTask.completed,
+          dueDate: updatedTask.dueDate,
+          dueTime: updatedTask.dueTime,
+        };
+        this.saveToLocalStorage();
+      } else {
+        console.warn(`Task with ID ${updatedTask.id} not found.`);
+      }
+    },
+  },
+});
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useTasksStore, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useTasksStore, import.meta.hot));
 }

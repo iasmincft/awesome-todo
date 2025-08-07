@@ -75,7 +75,7 @@
   });
 
   // Define os eventos que este componente pode emitir
-  const emit = defineEmits(['toggle-task', 'delete-task']); // Declaramos o evento 'toggle-task'
+  const emit = defineEmits(['toggle-task', 'delete-task', 'edit-task']); // Declaramos o evento 'toggle-task'
 
   // Função para emitir o evento quando a tarefa é clicada/checkbox alterado
   const toggleCompleted = (id) => {
