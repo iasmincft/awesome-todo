@@ -1,17 +1,7 @@
 <template>
     <q-card>
-        <q-card-section class="row">
-            <div class="text-h6 text-primary">Add Task</div>
-            <q-space />
-            <q-btn 
-                flat 
-                round 
-                dense 
-                color="primary" 
-                icon="close" 
-                v-close-popup
-             />
-        </q-card-section>
+        
+        <ModalHeader>Add Task</ModalHeader>
 
         <q-card-section class="q-pa-md">
             <q-form 
@@ -19,52 +9,24 @@
                 class="q-gutter-md"
                 ref="formRef">
 
-                <q-input 
-                    autofocus 
-                    v-model="newTask.name" 
-                    label="Nome da tarefa" 
-                    filled 
-                    clearable
-                    :rules="[val => !!val || 'Campo obrigatório']"
-                    ref="nameInput"
-                />
+                <ModalTaskName v-model:name="newTask.name"></ModalTaskName>
                 
-                <q-input filled v-model="newTask.dueDate" label="Data" mask="##/##/####" clearable>
-                    <template v-slot:append>
-                        <q-icon name="event" class="cursor-pointer">
-                            <q-popup-proxy cover transition-show="scale" transition-hide="scale"
-                                @before-show="setDefaultDate">
-                                <q-date v-model="newTask.dueDate" mask="DD/MM/YYYY" color="secondary" >
-                                    <div class="row items-center justify-end">
-                                        <q-btn v-close-popup label="Fechar" color="negative" flat />
-                                    </div>
-                                </q-date>
-                            </q-popup-proxy>
-                        </q-icon>
-                    </template>
-                </q-input>
+                <ModalDueDate v-model:dueDate="newTask.dueDate" 
+                    @open-date-picker="setDefaultDate"></ModalDueDate>
 
                 <div class="row justify-end" >
-                    <q-toggle v-model="showTimeField" label="Add time" label-left color="accent" v-if="newTask.dueDate" />
+                    <q-toggle 
+                        v-model="showTimeField"
+                        label="Add time" 
+                        label-left 
+                        color="accent" 
+                        v-if="newTask.dueDate" />
                 </div>
-                
-                <q-input filled v-model="newTask.dueTime" label="Hora" mask="##:##" v-if="showTimeField" > 
-                    <template v-slot:append>
-                        <q-icon name="access_time" class="cursor-pointer">
-                            <q-popup-proxy cover transition-show="scale" transition-hide="scale" >
-                                <q-time v-model="newTask.dueTime" color="secondary">
-                                    <div class="row items-center justify-end">
-                                        <q-btn v-close-popup label="Fechar" color="negative" flat />
-                                    </div>
-                                </q-time>
-                            </q-popup-proxy>
-                        </q-icon>
-                    </template>
-                </q-input>
 
-                <q-card-actions class="row justify-end">
-                    <q-btn type="submit" label="Adicionar Tarefa" color="primary"/>
-                </q-card-actions>
+                <ModalDueTime v-model:dueTime="newTask.dueTime" :show-time-field="showTimeField" ></ModalDueTime>
+
+                <ModalButtons></ModalButtons>
+                
             </q-form>
 
         </q-card-section>
@@ -73,15 +35,21 @@
 </template>
 
 <script setup>
-import { ref, watch, getCurrentInstance } from 'vue';
+import { ref, watch } from 'vue';
 import { useTasksStore } from 'src/stores/tasks';
 import { useQuasar } from 'quasar';
+
+import ModalHeader from './Shared/ModalHeader.vue';
+import ModalTaskName from "./Shared/ModalTaskName.vue";
+import ModalDueDate from './Shared/ModalDueDate.vue';
+import ModalDueTime from './Shared/ModalDueTime.vue';
+import ModalButtons from './Shared/ModalButtons.vue';
 
 const $q = useQuasar();
 const tasksStore = useTasksStore();
 const showTimeField = ref(false);
-const nameInput = ref(null);
 const formRef = ref(null);
+const emit = defineEmits(['close']);
 
 const newTask = ref({
     name: '',
@@ -95,6 +63,7 @@ function saveTask() {
         if (success) {
             tasksStore.addTask(newTask.value);
             resetForm();
+            emit('close');
         } else {
             $q.notify({
                 message: 'Não é possível salvar a tarefa sem um nome.',
