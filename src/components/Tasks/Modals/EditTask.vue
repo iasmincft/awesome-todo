@@ -15,7 +15,7 @@
         <div class="row justify-end">
           <q-toggle
             v-model="showTimeField"
-            label="Adicionar hora"
+            label="Add time"
             label-left
             color="accent"
             v-if="localTask.dueDate"

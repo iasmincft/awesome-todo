@@ -3,10 +3,10 @@
         autofocus 
         :model-value="name"  
         @update:model-value="$emit('update:name', $event)"
-        label="Nome da tarefa" 
+        label="Task name" 
         filled 
         clearable
-        :rules="[val => !!val || 'Campo obrigatório']"
+        :rules="[val => !!val || 'Field is required']"
         ref="nameInput"
     />
 </template>
