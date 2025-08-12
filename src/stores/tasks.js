@@ -1,29 +1,6 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
 import { uid } from "quasar";
 
-const initialTasks = {
-  /*
-      'ID1': {
-        name: 'Go to shop',
-        completed: false,
-        dueDate: '2019/05/12',
-        dueTime: '18:30'
-      },
-      'ID2': {
-        name: 'Get bananas',
-        completed: false,
-        dueDate: '2019/05/13',
-        dueTime: '14:00'
-      },
-      'ID3': {
-        name: 'Get apples',
-        completed: false,
-        dueDate: '2019/05/14',
-        dueTime: '16:00'
-      }	
-        */
-};
-
 export const useTasksStore = defineStore("tasks", {
   state: () => {
     let tasksFromLocalStorage = null;
@@ -35,21 +12,18 @@ export const useTasksStore = defineStore("tasks", {
       console.error("Erro ao carregar tarefas do localStorage:", e);
     }
     return {
-      items: tasksFromLocalStorage || initialTasks,
+      items: tasksFromLocalStorage,
     };
   },
   getters: {
-    tasks: (state) => {
-      return state.items;
-    },
-    // Novo getter para retornar as tarefas ordenadas
-    sortedTasks: (state) => {
+     tasksToDo: (state) => {
+      if (!state.items) return []; // Retorna um array vazio se não houver tarefas
       const tasksArray = Object.entries(state.items).map(([id, task]) => ({
         id,
         ...task,
       }));
 
-      return tasksArray.sort((a, b) => {
+      const sorted = tasksArray.sort((a, b) => {
         // Prioridade 1: Mover tarefas sem data para o final da lista.
         if (!a.dueDate && !b.dueDate) {
           return 0; // Se ambos não têm data, mantém a ordem original.
@@ -60,7 +34,7 @@ export const useTasksStore = defineStore("tasks", {
         if (!b.dueDate) {
           return -1; // Se B não tem data, A vem primeiro.
         }
-
+  
         // Prioridade 2: Converter a data e a hora para objetos Date para comparação.
         // Se a hora estiver faltando, usamos 'T00:00' como padrão.
         const dateA = new Date(
@@ -71,10 +45,20 @@ export const useTasksStore = defineStore("tasks", {
           b.dueDate.split("/").reverse().join("-") +
             (b.dueTime ? "T" + b.dueTime : "T00:00")
         );
-
+  
         // Comparação final
         return dateA - dateB;
       });
+      return tasksArray.filter((task) => !task.completed);
+    },
+    // Getter corrigido para incluir o ID
+    tasksCompleted: (state) => {
+      if (!state.items) return []; // Retorna um array vazio se não houver tarefas
+      const tasksArray = Object.entries(state.items).map(([id, task]) => ({
+        id,
+        ...task,
+      }));
+      return tasksArray.filter((task) => task.completed);
     },
   },
   actions: {

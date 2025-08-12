@@ -1,21 +1,20 @@
 <template>
   <q-page class="q-pa-md">
-    <q-list 
-      v-if="Object.keys(tasksStore.tasks).length"
+    <h5 class="q-mt-sm q-mb-md">Tarefas a serem realizadas</h5>
+    
+      <q-list 
+      v-if="tasksStore.tasksToDo.length"
       separator
       bordered>
-
       <TaskComponent
-        v-for="task in tasksStore.sortedTasks"
+        v-for="task in tasksStore.tasksToDo"
         :key="task.id"
         :task="task"
-        :task-id="task.id" 
+        :taskId="task.id"
         @toggle-task="tasksStore.toggleCompleted"
         @delete-task="promptToDelete"
         @edit-task="promptToEdit"
       />
-
-      
     </q-list>
     
     <div 
@@ -26,11 +25,28 @@
       No tasks yet!
     </div>
   </div>
+
+  <hr>
+
+    <h5 class="q-mt-lg q-mb-md">Tarefas completas</h5>
+    <q-list 
+      v-if="tasksStore.tasksCompleted.length"
+      separator
+      bordered>
+      <TaskComponent
+        v-for="task in tasksStore.tasksCompleted"
+        :key="task.id"
+        :task="task"
+        :taskId="task.id"
+        @toggle-task="tasksStore.toggleCompleted"
+        @delete-task="promptToDelete"
+        @edit-task="promptToEdit"
+      />
+    </q-list>
   
   <div class="absolute-bottom q-pa-lg q-pr-xl row items-center justify-end">
-    
     <div 
-    v-if="!Object.keys(tasksStore.tasks).length"
+    v-if="!tasksStore.tasksToDo.length"
     class="row items-center q-mr-xl">
     <div class="text-subtitle1 text-accent q-mr-l">
       Plan something extraordinary
@@ -58,7 +74,6 @@
   <EditTask :task="taskToEdit" @update-task="editTask" @close="showEditTask = false"/>
 </q-dialog>
 
-
 </q-page>
 </template>
 
@@ -69,6 +84,7 @@
   import { useQuasar } from "quasar";
   import AddTask from "src/components/Tasks/Modals/AddTask.vue";
   import EditTask from "src/components/Tasks/Modals/EditTask.vue";
+  import TasksToDo from 'src/components/Tasks/TasksToDo.vue';
 
   const tasksStore = useTasksStore();
   const $q = useQuasar();
@@ -76,7 +92,6 @@
   const showEditTask = ref(false);
   const taskToEdit = ref({});
   
-
   const promptToDelete = (id) => {
     $q.dialog({
       title: 'Confirm Remove',
@@ -98,7 +113,6 @@
         icon: 'check'
       });
     }).onCancel(() => {
-      
       $q.notify({
         message: 'Exclusion cancelled.',
         color: 'info',
@@ -108,10 +122,9 @@
   };
 
   const promptToEdit = (id) => {
-    taskToEdit.value = { id: id, ...tasksStore.tasks[id] };
+    taskToEdit.value = { id: id, ...tasksStore.items[id] };
     showEditTask.value = true;
   };
-
 
   const editTask = (updatedTask) => {
     tasksStore.updateTask(updatedTask);
@@ -120,5 +133,4 @@
 </script>
 
 <style>
-
 </style>

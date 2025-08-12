@@ -85,5 +85,4 @@
 </script>
 
 <style scoped>
-/* Adicione estilos específicos para o componente Task.vue aqui se necessário */
 </style>
