@@ -8,11 +8,12 @@
                 dense 
                 color="primary" 
                 icon="close" 
-                v-close-popup
+                @click="$emit('close')"
              />
         </q-card-section>
 </template>
 
 <script setup>
 
+  const emit = defineEmits(['close']);
 </script>

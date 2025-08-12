@@ -3,7 +3,7 @@
         filled 
         :model-value="dueDate" 
         @update:model-value="$emit('update:dueDate', $event)" 
-        label="Data" 
+        label="Date" 
         mask="##/##/####" 
         clearable>
         

@@ -51,7 +51,7 @@
 </div>
 
 <q-dialog v-model="showAddTask">
-  <AddTask/>
+  <AddTask @close="showAddTask = false"/>
 </q-dialog>
 
 <q-dialog v-model="showEditTask">
@@ -64,8 +64,8 @@
 
 <script setup>
   import { ref } from 'vue';
-  import { useTasksStore } from 'stores/tasks'; // Correct path to your Pinia store
-  import TaskComponent from 'src/components/Tasks/Task.vue'; // Correct path to your Task.vue component
+  import { useTasksStore } from 'stores/tasks'; 
+  import TaskComponent from 'src/components/Tasks/Task.vue'; 
   import { useQuasar } from "quasar";
   import AddTask from "src/components/Tasks/Modals/AddTask.vue";
   import EditTask from "src/components/Tasks/Modals/EditTask.vue";
@@ -79,8 +79,8 @@
 
   const promptToDelete = (id) => {
     $q.dialog({
-      title: 'Confirmar Exclusão',
-      message: 'Tem certeza que deseja excluir esta tarefa?',
+      title: 'Confirm Remove',
+      message: 'Are you sure you want to delete this task?',
       ok: {
         push: true,
         color: 'positive'
@@ -91,16 +91,16 @@
       },
       persistent: true
     }).onOk(() => {
-      tasksStore.deleteTask(id); // Chama a ação Pinia APÓS a confirmação
+      tasksStore.deleteTask(id); 
       $q.notify({
-        message: 'Tarefa excluída!',
+        message: 'Task deleted!',
         color: 'positive',
         icon: 'check'
       });
     }).onCancel(() => {
-      // Opcional: Ação ao cancelar
+      
       $q.notify({
-        message: 'Exclusão cancelada.',
+        message: 'Exclusion cancelled.',
         color: 'info',
         icon: 'cancel'
       });
@@ -112,7 +112,7 @@
     showEditTask.value = true;
   };
 
-  // Adicione a função 'editTask'
+
   const editTask = (updatedTask) => {
     tasksStore.updateTask(updatedTask);
     showEditTask.value = false;
@@ -120,5 +120,5 @@
 </script>
 
 <style>
-/* Adicione estilos específicos para PageTodo.vue aqui se necessário */
+
 </style>

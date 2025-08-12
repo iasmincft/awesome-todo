@@ -5,7 +5,7 @@
         filled 
         :model-value="dueTime" 
         @update:model-value="$emit('update:dueTime', $event)" 
-        label="Hora" 
+        label="Time" 
         mask="##:##" 
         v-if="showTimeField" > 
         

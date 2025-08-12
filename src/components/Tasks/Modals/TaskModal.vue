@@ -1,6 +1,6 @@
 <template>
   <q-card>
-    <ModalHeader>{{ isEditing ? 'Editar Tarefa' : 'Adicionar Tarefa' }}</ModalHeader>
+    <ModalHeader @close="closeModal">{{ isEditing ? 'Edit Task' : 'Add Task' }}</ModalHeader>
 
     <q-card-section class="q-pa-md">
       <q-form @submit.prevent="saveTask" class="q-gutter-md" ref="formRef">
@@ -12,7 +12,7 @@
         <div class="row justify-end">
           <q-toggle
             v-model="showTimeField"
-            label="Adicionar hora"
+            label="Add time"
             label-left
             color="accent"
             v-if="localTask.dueDate"
@@ -22,7 +22,6 @@
         <ModalDueTime v-model:dueTime="localTask.dueTime" :show-time-field="showTimeField"></ModalDueTime>
         
         <ModalButtons 
-          @close="$emit('close')"
           :is-dirty="isDirty"
         />
         
@@ -96,7 +95,7 @@ function saveTask() {
       emit('close');
     } else {
       $q.notify({
-        message: 'Não é possível salvar a tarefa sem um nome.',
+        message: 'Cannot save task without a name.',
         color: 'negative',
         icon: 'warning',
       });
@@ -123,6 +122,23 @@ watch(
     }
   }
 );
+
+const closeModal = () => {
+  if (isDirty.value) {
+    $q.dialog({
+      title: 'Discard Changes',
+      message: 'You have unsaved changes. Do you want to close and lose them?',
+      cancel: true,
+      persistent: true,
+    }).onOk(() => {
+      emit('close');
+    }).onCancel(() => {
+      // O usuário cancelou, não faz nada
+    });
+  } else {
+    emit('close');
+  }
+};
 </script>
 
 <style scoped>
