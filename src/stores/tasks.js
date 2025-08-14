@@ -23,7 +23,10 @@ export const useTasksStore = defineStore("tasks", {
         ...task,
       }));
 
-      const sorted = tasksArray.sort((a, b) => {
+      // Cria uma cópia do array para ordenar, garantindo que o array original não seja afetado.
+      const tasksUncompleted = [...tasksArray].filter((task) => !task.completed);
+
+      const sorted = tasksUncompleted.sort((a, b) => {
         // Prioridade 1: Mover tarefas sem data para o final da lista.
         if (!a.dueDate && !b.dueDate) {
           return 0; // Se ambos não têm data, mantém a ordem original.
@@ -49,7 +52,7 @@ export const useTasksStore = defineStore("tasks", {
         // Comparação final
         return dateA - dateB;
       });
-      return tasksArray.filter((task) => !task.completed);
+      return sorted;
     },
     // Getter corrigido para incluir o ID
     tasksCompleted: (state) => {
@@ -58,7 +61,11 @@ export const useTasksStore = defineStore("tasks", {
         id,
         ...task,
       }));
-      return tasksArray.filter((task) => task.completed);
+      const completedTasks = tasksArray.filter((task) => task.completed);
+      
+      // Ordena as tarefas concluídas pelo carimbo de data/hora de conclusão
+      // A tarefa mais recente (maior timestamp) vai para o final da lista.
+      return completedTasks.sort((a, b) => a.completedAt - b.completedAt);
     },
   },
   actions: {
@@ -70,6 +77,13 @@ export const useTasksStore = defineStore("tasks", {
     toggleCompleted(id) {
       if (this.items[id]) {
         this.items[id].completed = !this.items[id].completed;
+        // Adiciona um timestamp quando a tarefa é concluída
+        if (this.items[id].completed) {
+          this.items[id].completedAt = new Date().getTime();
+        } else {
+          // Remove o timestamp se a tarefa for reaberta
+          delete this.items[id].completedAt;
+        }
       } else {
         console.warn(`Task with ID ${id} not found in store.`);
       }

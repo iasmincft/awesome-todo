@@ -77,4 +77,5 @@ function toggleLeftDrawer() {
 .q-drawer .q-router-link--active {
   color: white !important;
 }
+
 </style>

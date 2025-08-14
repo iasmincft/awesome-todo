@@ -4,6 +4,8 @@
         :model-value="name"  
         @update:model-value="$emit('update:name', $event)"
         label="Task name" 
+        id="task-name"
+        name="taskName"
         filled 
         clearable
         :rules="[val => !!val || 'Field is required']"

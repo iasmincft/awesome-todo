@@ -1,6 +1,6 @@
 <template>
     <q-list 
-      v-if="tasksStore.tasksToDo.length"
+      
       separator
       bordered>
       <TaskComponent
@@ -16,5 +16,13 @@
 </template>
 
 <script setup>
+import { useTasksStore } from 'stores/tasks';
+import TaskComponent from 'src/components/Tasks/Task.vue';
 
+const tasksStore = useTasksStore();
+
+const { promptToDelete, promptToEdit } = defineProps({
+  promptToDelete: Function,
+  promptToEdit: Function
+});
 </script>
