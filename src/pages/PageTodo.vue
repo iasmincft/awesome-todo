@@ -21,7 +21,7 @@
       <div class="column items-center">
         <q-icon name="self_improvement" size="100px" color="secondary" />
         <div class="text-h6 text-secondary q-mt-md text-center">
-          No tasks yet!
+          No tasks to do yet!
         </div>
       </div>
     </div>

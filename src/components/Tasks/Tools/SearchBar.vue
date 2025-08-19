@@ -5,10 +5,10 @@
         filled 
         bottom-slots 
         v-model="searchField" 
-        label="Search" 
-        :dense="dense">
+        label="Search"
+        >
         <template v-slot:append>
-          <q-icon v-if="text !== ''" name="close" @click="text = ''" class="cursor-pointer" />
+          <q-icon v-if="searchField !== ''" name="close" @click="searchField = ''" class="cursor-pointer" />
           <q-icon name="search" />
         </template>
       </q-input>
@@ -17,6 +17,18 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed } from 'vue';
+import { useTasksStore } from 'stores/tasks';
+
+const tasksStore = useTasksStore();
+
+const searchField = computed({
+  get() {
+    return tasksStore.search;
+  },
+  set(value) {
+    tasksStore.setSearch(value);
+  },
+});
 
 </script>

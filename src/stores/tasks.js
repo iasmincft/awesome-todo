@@ -13,6 +13,7 @@ export const useTasksStore = defineStore("tasks", {
     }
     return {
       items: tasksFromLocalStorage,
+      search: '',
     };
   },
   getters: {
@@ -23,8 +24,15 @@ export const useTasksStore = defineStore("tasks", {
         ...task,
       }));
 
+      const tasksFiltered = state.search ?
+        tasksArray.filter((task) => {
+          const taskNameLowerCase = task.name.toLowerCase();
+          const searchLowerCase = state.search.toLowerCase();
+          return taskNameLowerCase.includes(searchLowerCase);
+        }) : tasksArray;
+
       // Cria uma cópia do array para ordenar, garantindo que o array original não seja afetado.
-      const tasksUncompleted = [...tasksArray].filter((task) => !task.completed);
+      const tasksUncompleted = [...tasksFiltered].filter((task) => !task.completed);
 
       const sorted = tasksUncompleted.sort((a, b) => {
         // Prioridade 1: Mover tarefas sem data para o final da lista.
@@ -61,7 +69,15 @@ export const useTasksStore = defineStore("tasks", {
         id,
         ...task,
       }));
-      const completedTasks = tasksArray.filter((task) => task.completed);
+
+      const tasksFiltered = state.search ?
+        tasksArray.filter((task) => {
+          const taskNameLowerCase = task.name.toLowerCase();
+          const searchLowerCase = state.search.toLowerCase();
+          return taskNameLowerCase.includes(searchLowerCase);
+        }) : tasksArray;
+
+      const completedTasks = tasksFiltered.filter((task) => task.completed);
       
       // Ordena as tarefas concluídas pelo carimbo de data/hora de conclusão
       // A tarefa mais recente (maior timestamp) vai para o final da lista.
@@ -131,6 +147,10 @@ export const useTasksStore = defineStore("tasks", {
         console.warn(`Task with ID ${updatedTask.id} not found.`);
       }
     },
+    setSearch(value) {
+      console.log('Value', value);
+      this.search = value;
+    }
   },
 });
 
