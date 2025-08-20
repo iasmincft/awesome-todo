@@ -1,12 +1,21 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md" style="padding-bottom:110px">
 
     <SearchBar />
-
-      <q-banner class="bg-secondary text-white rounded-t-md"  >
-          Tasks To-Do
-      </q-banner>
       
+    <NoTasks
+      v-if="!tasksStore.tasksToDo.length && !tasksStore.search"
+      message="No tasks to do yet!"
+      @show-add-task="showAddTask = true">
+    </NoTasks> 
+
+    <NoTasks
+      v-if="!tasksStore.tasksToDo.length && tasksStore.search"
+      message="No tasks match your search."
+      @show-add-task="showAddTask = true">
+      
+    </NoTasks>
+
     <template v-if="tasksStore.tasksToDo.length">
       <TasksToDo 
         :promptToDelete="promptToDelete"
@@ -14,34 +23,14 @@
       />
     </template>
     
-    <div 
-      v-else
-      class="flex flex-center q-py-xl"
-      style="min-height: 200px;">
-      <div class="column items-center">
-        <q-icon name="self_improvement" size="100px" color="secondary" />
-        <div class="text-h6 text-secondary q-mt-md text-center">
-          No tasks to do yet!
-        </div>
-      </div>
-    </div>
-   
+  
     <template v-if="tasksStore.tasksCompleted.length">
       <hr>
-      <q-banner class="bg-accent text-white rounded-t-md"  >
-            Tasks Completed
-      </q-banner>
-      <TasksCompleted :promptToDelete="promptToDelete" :promptToEdit="promptToEdit" />
+      
+      <TasksCompleted :promptToDelete="promptToDelete" />
     </template>
 
-    <div class="absolute-bottom q-pa-lg q-pr-xl row items-center justify-end">
-      <div v-if="!tasksStore.tasksToDo.length" class="row items-center q-mr-xl">
-        <div class="text-subtitle1 text-accent q-mr-l">
-          Plan something extraordinary
-        </div>
-        <q-icon name="keyboard_double_arrow_right" size="40px" color="accent" />
-      </div>
-    </div>
+    
 
     <div class="absolute-bottom text-right q-pa-lg ">
       <q-btn @click="showAddTask = true" round dense color="primary" size="24px" icon="add" />
@@ -67,6 +56,7 @@ import EditTask from "src/components/Tasks/Modals/EditTask.vue";
 import TasksToDo from 'src/components/Tasks/TasksToDo.vue';
 import TasksCompleted from "src/components/Tasks/TasksCompleted.vue";
 import SearchBar from 'src/components/Tasks/Tools/SearchBar.vue';
+import NoTasks from "src/components/Tasks/NoTasks.vue";
 
 const tasksStore = useTasksStore();
 const $q = useQuasar();

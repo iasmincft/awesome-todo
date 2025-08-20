@@ -1,4 +1,9 @@
 <template>
+
+    <q-banner class="bg-accent text-white rounded-t-md"  >
+        Tasks Completed
+    </q-banner>
+
     <q-list 
         v-if="tasksStore.tasksCompleted.length"
         separator
