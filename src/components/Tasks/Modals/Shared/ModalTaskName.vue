@@ -10,11 +10,15 @@
         clearable
         :rules="[val => !!val || 'Field is required']"
         ref="nameInput"
+        v-select-all
     />
 </template>
 
 <script setup>
 import { ref } from 'vue';
+import { selectAllDirective } from 'src/directives/selectAll';
+
+const vSelectAll = selectAllDirective;
 
 const props = defineProps({
     name: {

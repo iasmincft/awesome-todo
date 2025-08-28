@@ -4,8 +4,10 @@
         <q-input 
         filled 
         bottom-slots 
-        v-model="searchField" 
+        v-model="searchField"
+        @keyup.esc="searchField = ''"
         label="Search"
+        v-select-all
         >
         <template v-slot:append>
           <q-icon v-if="searchField !== ''" name="close" @click="searchField = ''" class="cursor-pointer" />
@@ -19,6 +21,9 @@
 <script setup>
 import { computed } from 'vue';
 import { useTasksStore } from 'stores/tasks';
+import { selectAllDirective } from 'src/directives/selectAll';
+
+const vSelectAll = selectAllDirective;
 
 const tasksStore = useTasksStore();
 

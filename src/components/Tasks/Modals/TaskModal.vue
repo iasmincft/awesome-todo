@@ -128,7 +128,14 @@ const closeModal = () => {
     $q.dialog({
       title: 'Discard Changes',
       message: 'You have unsaved changes. Do you want to close and lose them?',
-      cancel: true,
+       ok: {
+      push: true,
+      color: 'positive'
+      },
+      cancel: {
+        color: 'negative',
+        push: true
+      },
       persistent: true,
     }).onOk(() => {
       emit('close');
@@ -139,6 +146,7 @@ const closeModal = () => {
     emit('close');
   }
 };
+
 </script>
 
 <style scoped>

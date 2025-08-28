@@ -1,8 +1,11 @@
 <template>
   <q-page class="q-pa-md" style="padding-bottom:110px">
 
-    <SearchBar />
-      
+    <div class="row justify-end q-gutter-md">
+      <SearchBar />
+      <Sort />
+    </div>
+
     <NoTasks
       v-if="!tasksStore.tasksToDo.length && !tasksStore.search"
       message="No tasks to do yet!"
@@ -57,6 +60,7 @@ import TasksToDo from 'src/components/Tasks/TasksToDo.vue';
 import TasksCompleted from "src/components/Tasks/TasksCompleted.vue";
 import SearchBar from 'src/components/Tasks/Tools/SearchBar.vue';
 import NoTasks from "src/components/Tasks/NoTasks.vue";
+import Sort from "src/components/Tasks/Tools/Sort.vue";
 
 const tasksStore = useTasksStore();
 const $q = useQuasar();

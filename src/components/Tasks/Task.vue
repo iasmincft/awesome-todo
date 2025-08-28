@@ -1,12 +1,20 @@
 <template>
-  <q-item @click="toggleCompleted(taskId)" :class="!task.completed ? 'bg-orange-1' : 'bg-green-1'" clickable v-ripple>
+  <q-item 
+    @click="toggleCompleted(taskId)" 
+    :class="!task.completed ? 'bg-orange-1' : 'bg-green-1'" 
+    v-touch-hold:1000.mouse="handleHold"
+    clickable 
+    v-ripple
+  >
     <q-item-section side top>
       <q-checkbox :model-value="task.completed" @update:model-value="toggleCompleted(taskId)" />
     </q-item-section>
 
     <q-item-section>
-      <q-item-label :class="{ 'text-strikethrough': task.completed }">
-        {{ task.name }}</q-item-label>
+      <q-item-label 
+        :class="{ 'text-strikethrough': task.completed }"
+        v-html="searchHighlight"
+      />
     </q-item-section>
 
     <q-item-section v-if="task.dueDate" side>
@@ -40,6 +48,11 @@
 
 <script setup>
 
+import { computed } from 'vue';
+import { useTasksStore } from 'stores/tasks';
+
+const tasksStore = useTasksStore();
+
 // Define as props que este componente Task.vue receberá
 const props = defineProps({
   task: {
@@ -60,6 +73,31 @@ const toggleCompleted = (id) => {
   emit('toggle-task', id); // Emitimos o evento com o taskId
 };
 
+const handleHold = () => {
+  if (!props.task.completed) {
+    emit('edit-task', props.taskId);
+  }
+};
+
+const searchHighlight = computed(() => {
+  const search = tasksStore.search;
+  
+  if (!search) {
+    return props.task.name;
+  }
+
+  const regex = new RegExp(`(${search})`, 'gi');
+  return props.task.name.replace(regex, '<mark>$1</mark>');
+});
+
 </script>
 
-<style scoped></style>
+<style scoped>
+
+mark {
+  background-color: yellow;
+  color: black;
+  border-radius: 2px;
+}
+
+</style>

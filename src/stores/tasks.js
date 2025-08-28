@@ -1,6 +1,36 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
 import { uid } from "quasar";
 
+// Objeto auxiliar com as funções de ordenação
+const sortFunctions = {
+  'name-asc': (a, b) => a.name.localeCompare(b.name),
+  'name-desc': (a, b) => b.name.localeCompare(a.name),
+  'date-asc': (a, b) => {
+    // Prioridade 1: Mover tarefas sem data para o final da lista.
+    if (!a.dueDate && !b.dueDate) return 0;
+    if (!a.dueDate) return 1;
+    if (!b.dueDate) return -1;
+
+    // Prioridade 2: Converter data e hora para comparação.
+    const dateA = new Date(`${a.dueDate.split("/").reverse().join("-")}T${a.dueTime || '00:00'}`);
+    const dateB = new Date(`${b.dueDate.split("/").reverse().join("-")}T${b.dueTime || '00:00'}`);
+
+    return dateA - dateB;
+  },
+  'date-desc': (a, b) => {
+    // Prioridade 1: Mover tarefas sem data para o final da lista.
+    if (!a.dueDate && !b.dueDate) return 0;
+    if (!a.dueDate) return 1;
+    if (!b.dueDate) return -1;
+    
+    // Prioridade 2: Converter data e hora para comparação.
+    const dateA = new Date(`${a.dueDate.split("/").reverse().join("-")}T${a.dueTime || '00:00'}`);
+    const dateB = new Date(`${b.dueDate.split("/").reverse().join("-")}T${b.dueTime || '00:00'}`);
+
+    return dateB - dateA;
+  },
+};
+
 export const useTasksStore = defineStore("tasks", {
   state: () => {
     let tasksFromLocalStorage = null;
@@ -14,6 +44,10 @@ export const useTasksStore = defineStore("tasks", {
     return {
       items: tasksFromLocalStorage,
       search: '',
+      sort: {
+        by: 'date',
+        asc: true
+      }
     };
   },
   getters: {
@@ -34,33 +68,14 @@ export const useTasksStore = defineStore("tasks", {
       // Cria uma cópia do array para ordenar, garantindo que o array original não seja afetado.
       const tasksUncompleted = [...tasksFiltered].filter((task) => !task.completed);
 
-      const sorted = tasksUncompleted.sort((a, b) => {
-        // Prioridade 1: Mover tarefas sem data para o final da lista.
-        if (!a.dueDate && !b.dueDate) {
-          return 0; // Se ambos não têm data, mantém a ordem original.
-        }
-        if (!a.dueDate) {
-          return 1; // Se A não tem data, B vem primeiro.
-        }
-        if (!b.dueDate) {
-          return -1; // Se B não tem data, A vem primeiro.
-        }
-  
-        // Prioridade 2: Converter a data e a hora para objetos Date para comparação.
-        // Se a hora estiver faltando, usamos 'T00:00' como padrão.
-        const dateA = new Date(
-          a.dueDate.split("/").reverse().join("-") +
-            (a.dueTime ? "T" + a.dueTime : "T00:00")
-        );
-        const dateB = new Date(
-          b.dueDate.split("/").reverse().join("-") +
-            (b.dueTime ? "T" + b.dueTime : "T00:00")
-        );
-  
-        // Comparação final
-        return dateA - dateB;
-      });
-      return sorted;
+      const sortKey = `${state.sort.by}-${state.sort.asc ? 'asc' : 'desc'}`;
+
+      // Aplica a função de ordenação selecionada
+      if (sortFunctions[sortKey]) {
+        tasksUncompleted.sort(sortFunctions[sortKey]);
+      }
+
+      return tasksUncompleted;
     },
     // Getter corrigido para incluir o ID
     tasksCompleted: (state) => {
@@ -150,7 +165,18 @@ export const useTasksStore = defineStore("tasks", {
     setSearch(value) {
       console.log('Value', value);
       this.search = value;
-    }
+    },
+    setSort(sortBy) {
+      // Se clicou no mesmo critério, apenas inverte a direção
+      if (this.sort.by === sortBy) {
+        this.sort.asc = !this.sort.asc;
+      } 
+      // Se clicou em um novo critério, muda para ele e reseta a direção para ascendente
+      else {
+        this.sort.by = sortBy;
+        this.sort.asc = true;
+      }
+    },
   },
 });
 

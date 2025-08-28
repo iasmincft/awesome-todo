@@ -14,7 +14,8 @@ export default defineConfig((ctx) => {
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
       'i18n',
-      'pinia'
+      'pinia',
+      'quasar-lang-pack'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
