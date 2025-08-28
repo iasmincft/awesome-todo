@@ -11,10 +11,10 @@
     </q-item-section>
 
     <q-item-section>
-      <q-item-label 
+      <span 
         :class="{ 'text-strikethrough': task.completed }"
         v-html="searchHighlight"
-      />
+      ></span>
     </q-item-section>
 
     <q-item-section v-if="task.dueDate" side>
