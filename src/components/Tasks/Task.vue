@@ -92,12 +92,10 @@ const searchHighlight = computed(() => {
 
 </script>
 
-<style scoped>
-
+<style>
 mark {
-  background-color: yellow;
-  color: black;
-  border-radius: 2px;
+  background-color: var(--q-warning);
+  padding: 3px;
+  border-radius: 5px;
 }
-
 </style>
