@@ -6,10 +6,10 @@
     clickable 
     v-ripple
   >
-    <q-item-section side top>
-      <q-checkbox :model-value="task.completed" @update:model-value="toggleCompleted(taskId)" />
+    <q-item-section side top >
+      <q-checkbox :model-value="task.completed" @update:model-value="toggleCompleted(taskId)"  />
     </q-item-section>
-
+  
     <q-item-section>
       <span 
         :class="{ 'text-strikethrough': task.completed }"
@@ -24,7 +24,7 @@
         <div class="column justify-center">
           <q-icon name="event" size="18px" class="q-mr-xs" />
         </div>
-        <div class="column">
+        <div class="column ">
           <q-item-label class="row justify-end" caption>
             {{ task.dueDate }}
           </q-item-label>
@@ -36,11 +36,11 @@
       </div>
     </q-item-section>
 
-    <q-item-section side>
+    <q-item-section side class="dark-letter edit-btn">
       <q-btn v-if="!task.completed" @click.stop="emit('edit-task', taskId)" flat round dense color="accent" icon="edit" />
     </q-item-section>
 
-    <q-item-section side>
+    <q-item-section side class="delete-btn">
       <q-btn @click.stop="emit('delete-task', taskId)" flat round dense color="negative" icon="delete" />
     </q-item-section>
   </q-item>

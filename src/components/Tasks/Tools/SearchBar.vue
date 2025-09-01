@@ -1,6 +1,5 @@
 <template>
   <div class="row justify-end q-pa-xs"> 
-    <div style="width: 300px"> 
         <q-input 
         filled 
         bottom-slots 
@@ -14,7 +13,6 @@
           <q-icon name="search" />
         </template>
       </q-input>
-    </div>
   </div>
 </template>
 
@@ -37,3 +35,4 @@ const searchField = computed({
 });
 
 </script>
+

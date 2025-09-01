@@ -105,9 +105,9 @@ export default defineConfig((ctx) => {
       plugins: ['Dialog', 'Notify']
     },
 
-    // animations: 'all', // --- includes all animations
+     animations: 'all', // --- includes all animations
     // https://v2.quasar.dev/options/animations
-    animations: [],
+    // animations: ['zoomIn', 'zoomOut'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#sourcefiles
     // sourceFiles: {

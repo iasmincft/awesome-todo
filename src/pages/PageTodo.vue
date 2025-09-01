@@ -6,34 +6,34 @@
       <Sort />
     </div>
 
-    <NoTasks
-      v-if="!tasksStore.tasksToDo.length && !tasksStore.search"
-      message="No tasks to do yet!"
-      @show-add-task="showAddTask = true">
-    </NoTasks> 
+    <div class="relative-position">
+      <NoTasks
+        v-if="!tasksStore.tasksToDo.length && !tasksStore.search"
+        message="No tasks to do yet!"
+        @show-add-task="showAddTask = true">
+      </NoTasks> 
 
-    <NoTasks
-      v-if="!tasksStore.tasksToDo.length && tasksStore.search"
-      message="No tasks match your search."
-      @show-add-task="showAddTask = true">
+      <NoTasks
+        v-if="!tasksStore.tasksToDo.length && tasksStore.search"
+        message="No tasks match your search."
+        @show-add-task="showAddTask = true">
+        
+      </NoTasks>
+
+      <template v-if="tasksStore.tasksToDo.length">
+        <TasksToDo 
+          :promptToDelete="promptToDelete"
+          :promptToEdit="promptToEdit"
+        />
+      </template>
       
-    </NoTasks>
-
-    <template v-if="tasksStore.tasksToDo.length">
-      <TasksToDo 
-        :promptToDelete="promptToDelete"
-        :promptToEdit="promptToEdit"
-      />
-    </template>
     
-  
-    <template v-if="tasksStore.tasksCompleted.length">
-      <hr>
-      
-      <TasksCompleted :promptToDelete="promptToDelete" />
-    </template>
-
-    
+      <template v-if="tasksStore.tasksCompleted.length">
+        <hr>
+        
+        <TasksCompleted :promptToDelete="promptToDelete" />
+      </template>
+    </div>
 
     <div class="absolute-bottom text-right q-pa-lg ">
       <q-btn @click="showAddTask = true" round dense color="primary" size="24px" icon="add" />

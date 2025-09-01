@@ -78,7 +78,7 @@ watch(() => props.task, (newVal) => {
   }
 }, { immediate: true });
 
-watch(localTask, (newVal, oldVal) => {
+watch(localTask, (newVal) => {
   if (props.task) {
     const originalTask = { ...props.task };
     isDirty.value = JSON.stringify(newVal) !== JSON.stringify(originalTask);
@@ -150,4 +150,6 @@ const closeModal = () => {
 </script>
 
 <style scoped>
+
+
 </style>

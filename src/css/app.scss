@@ -1,1 +1,36 @@
-// app global css in SCSS form
+/* app global css in SCSS form */
+
+
+.body--dark {
+
+  /* Sobrescreve a cor primária do tema no modo escuro */
+  --q-primary: #916ece;   
+
+  .q-item.dark-letter {
+
+    /* --- ESTILOS DE TEXTO E ÍCONE DE DATA --- */
+    .q-item__section--side:not(:has(.q-btn)) {
+      color: #555555;
+    }
+    .q-item__label--caption {
+      color: #555555;
+    }
+    .q-item__section--main  {
+      color: #212121;
+    }
+
+    .q-checkbox__inner.relative-position.non-selectable.q-checkbox__inner--falsy {
+      color: #645f58;
+    }
+    
+    /* --- ÍCONES DE AÇÃO (EDITAR/DELETAR) --- */
+    .q-item__section .q-btn[color="accent"] .q-icon {
+      color: var(--q-accent) !important;
+    }
+    .q-item__section .q-btn[color="negative"] .q-icon {
+      color: var(--q-negative) !important;
+    }
+
+  }
+  
+}
