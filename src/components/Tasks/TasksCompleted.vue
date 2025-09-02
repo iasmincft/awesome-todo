@@ -5,14 +5,16 @@
     leave-active-class="animated zoomOut"
   >
     <div v-if="tasksStore.tasksCompleted.length">
-      <q-banner class="bg-accent text-white rounded-t-md">
+      <q-banner 
+        v-if="!settingsStore.showSingleTable" 
+        class="bg-accent text-white rounded-t-md"
+      >
         Tasks Completed
       </q-banner>
 
       <transition-group
         tag="q-list"
         separator
-        bordered
       >
         <TaskComponent
           v-for="task in tasksStore.tasksCompleted"
@@ -29,11 +31,13 @@
 </template>
 
 <script setup>
-// O script permanece o mesmo
+
 import { useTasksStore } from 'stores/tasks';
 import TaskComponent from 'src/components/Tasks/Task.vue';
+import { useSettingsStore } from 'stores/settings'; 
 
 const tasksStore = useTasksStore();
+const settingsStore = useSettingsStore();
 
 const { promptToDelete } = defineProps({
   promptToDelete: Function

@@ -1,10 +1,11 @@
 <template>
   <q-item 
     @click="toggleCompleted(taskId)" 
-    :class="!task.completed ? 'bg-orange-1' : 'bg-green-1'" 
+    :class="!task.completed ? 'bg-orange-1' : 'bg-green-1' " 
     v-touch-hold:1000.mouse="handleHold"
     clickable 
     v-ripple
+    class="q-list--bordered"
   >
     <q-item-section side top >
       <q-checkbox :model-value="task.completed" @update:model-value="toggleCompleted(taskId)"  />
@@ -26,7 +27,7 @@
         </div>
         <div class="column ">
           <q-item-label class="row justify-end" caption>
-            {{ task.dueDate }}
+            {{ formatDate(task.dueDate) }}
           </q-item-label>
           <q-item-label class="row justify-end" caption>
             <small>{{ task.dueTime }}</small>
@@ -50,10 +51,11 @@
 
 import { computed } from 'vue';
 import { useTasksStore } from 'stores/tasks';
+import { useDateFormat } from 'src/composables/useDateFormat';
 
 const tasksStore = useTasksStore();
+const { formatDate } = useDateFormat();
 
-// Define as props que este componente Task.vue receberá
 const props = defineProps({
   task: {
     type: Object,
@@ -65,12 +67,9 @@ const props = defineProps({
   }
 });
 
-// Define os eventos que este componente pode emitir
-const emit = defineEmits(['toggle-task', 'delete-task', 'edit-task']); // Declaramos o evento 'toggle-task'
-
-// Função para emitir o evento quando a tarefa é clicada/checkbox alterado
+const emit = defineEmits(['toggle-task', 'delete-task', 'edit-task']);
 const toggleCompleted = (id) => {
-  emit('toggle-task', id); // Emitimos o evento com o taskId
+  emit('toggle-task', id); 
 };
 
 const handleHold = () => {
@@ -93,9 +92,12 @@ const searchHighlight = computed(() => {
 </script>
 
 <style>
+
 mark {
   background-color: var(--q-warning);
   padding: 3px;
   border-radius: 5px;
+  
 }
+
 </style>

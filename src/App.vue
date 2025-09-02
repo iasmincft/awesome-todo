@@ -11,6 +11,7 @@ const settingsStore = useSettingsStore();
 onMounted(() => {
   settingsStore.setDarkMode(settingsStore.darkMode);
 });
+
 </script>
 
 <style>

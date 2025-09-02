@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { date } from 'quasar'
+
 
 const props = defineProps({
     dueDate: {

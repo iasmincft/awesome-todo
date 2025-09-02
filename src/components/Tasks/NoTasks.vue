@@ -4,9 +4,11 @@
     appear
     enter-active-class="animated zoomIn"
     leave-active-class="animated zoomOut"
-    absolute-top
   >
-    <q-banner class="bg-grey-3">
+    <q-banner
+      :key="'no-tasks-banner'" 
+      class="bg-grey-3"
+      absolute-top>
       <div 
       class="flex flex-center q-py-xl"
       style="min-height: 200px;">
@@ -26,7 +28,7 @@
       </div>
     </div>
     <div class="absolute-bottom q-pa-lg q-pr-xl row items-center justify-end">
-        <div v-if="!tasksStore.tasksToDo.length && !tasksStore.search" class="row items-center q-mr-xl">
+        <div v-if="!tasksStore.tasksToDo.length && !tasksStore.search && !settingsStore.showSingleTable" class="row items-center q-mr-xl">
           <div class="text-subtitle1 text-accent q-mr-l">
             Plan something extraordinary
           </div>
@@ -40,8 +42,10 @@
 <script setup>
 
 import { useTasksStore } from 'stores/tasks';
+import { useSettingsStore } from 'stores/settings';
 
 const tasksStore = useTasksStore();
+const settingsStore = useSettingsStore();
 
 const emit = defineEmits(['showAddTask']);
 

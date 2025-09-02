@@ -8,13 +8,18 @@
 
     <div class="relative-position">
       <NoTasks
-        v-if="!tasksStore.tasksToDo.length && !tasksStore.search"
+        v-if="
+      (
+        (!settingsStore.showSingleTable && tasksStore.tasksToDo.length === 0) ||
+        (settingsStore.showSingleTable && Object.keys(tasksStore.items).length === 0)
+      ) && !tasksStore.search
+    "
         message="No tasks to do yet!"
         @show-add-task="showAddTask = true">
       </NoTasks> 
 
       <NoTasks
-        v-if="!tasksStore.tasksToDo.length && tasksStore.search"
+        v-if="tasksStore.search && Object.keys(tasksStore.items).length > 0 && tasksStore.tasksToDo.length === 0 && tasksStore.tasksCompleted.length === 0"
         message="No tasks match your search."
         @show-add-task="showAddTask = true">
         
@@ -29,8 +34,9 @@
       
     
       <template v-if="tasksStore.tasksCompleted.length">
-        <hr>
-        
+        <div v-if="!settingsStore.showSingleTable" >
+          <hr>
+        </div>
         <TasksCompleted :promptToDelete="promptToDelete" />
       </template>
     </div>
@@ -61,8 +67,10 @@ import TasksCompleted from "src/components/Tasks/TasksCompleted.vue";
 import SearchBar from 'src/components/Tasks/Tools/SearchBar.vue';
 import NoTasks from "src/components/Tasks/NoTasks.vue";
 import Sort from "src/components/Tasks/Tools/Sort.vue";
+import { useSettingsStore } from 'stores/settings';
 
 const tasksStore = useTasksStore();
+const settingsStore = useSettingsStore();
 const $q = useQuasar();
 const showAddTask = ref(false);
 const showEditTask = ref(false);
@@ -113,4 +121,8 @@ const editTask = (updatedTask) => {
 .rounded-t-md {
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
-}</style>
+}
+  .q-list--bordered {
+   border: 1px solid rgba(0, 0, 0, 0.12);
+}
+</style>

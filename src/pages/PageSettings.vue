@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <div style="max-width: 350px">
+    <div style="max-width: flex">
       <q-list bordered padding>
         
         <q-item-label header>Settings</q-item-label>
@@ -11,8 +11,8 @@
           </q-item-section>
           <q-item-section side >
             <q-toggle 
-              v-model="show12hFormat"  
-              color="blue" 
+              v-model="showLongDate"  
+              color="accent" 
             />
           </q-item-section>
         </q-item>
@@ -24,7 +24,7 @@
           <q-item-section side >
             <q-toggle 
               v-model="darkMode"  
-              color="blue" 
+              color="accent" 
             />
           </q-item-section>
         </q-item>
@@ -34,7 +34,7 @@
           <q-item-label>Single table</q-item-label>
         </q-item-section>
         <q-item-section side top>
-          <q-toggle color="green" v-model="notif2" val="friend" />
+          <q-toggle color="accent" v-model="showSingleTable" val="friend" />
         </q-item-section>
       </q-item>
   
@@ -54,7 +54,7 @@
       return settingsStore.showLongDate;
     },
     set(value) {
-      settingsStore.showLongDate(value);
+      settingsStore.setShowLongDate(value);
     }
   });
 
@@ -67,12 +67,12 @@
     }
   });
 
-  const showTasksInOneList = computed({
+  const showSingleTable = computed({
     get() {
-      return settingsStore.showTasksInOneList;
+      return settingsStore.showSingleTable;
     },
     set(value) {
-      settingsStore.setShowTasksInOneList(value);
+      settingsStore.setShowSingleTable(value);
     }
   });
 </script>

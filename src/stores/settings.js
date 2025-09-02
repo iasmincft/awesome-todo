@@ -6,7 +6,7 @@ function loadSettings() {
 
   const defaults = {
     showLongDate: false,
-    showTasksInOneList: false,
+    showSingleTable: false,
     darkMode: false,
   };
 
@@ -23,7 +23,7 @@ export const useSettingsStore = defineStore("settings", {
 
   getters: {
     showLongDate: (state) => state.settings.showLongDate,
-    showTasksInOneList: (state) => state.settings.showTasksInOneList,
+    showSingleTable: (state) => state.settings.showSingleTable,
     darkMode: (state) => state.settings.darkMode,
   },
 
@@ -31,12 +31,12 @@ export const useSettingsStore = defineStore("settings", {
     saveSettings() {
       LocalStorage.set("awesome-todo-settings", this.settings);
     },
-    showLongDate(value) {
+    setShowLongDate(value) {
       this.settings.showLongDate = value;
       this.saveSettings();
     },
-    setShowTasksInOneList(value) {
-      this.settings.showTasksInOneList = value;
+    setShowSingleTable(value) {
+      this.settings.showSingleTable = value;
       this.saveSettings();
     },
     setDarkMode(value) {
