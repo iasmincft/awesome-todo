@@ -7,6 +7,15 @@
           Awesome To-Do
         </q-toolbar-title>
 
+        <q-btn 
+          color="info" 
+          icon-right="person" 
+          label="Login" 
+          class="absolute-right q-ma-xs"
+          to="/auth"  
+        />
+
+
       </q-toolbar>
     </q-header>
 

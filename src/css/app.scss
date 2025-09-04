@@ -5,6 +5,9 @@
 
   /* Sobrescreve a cor primária do tema no modo escuro */
   --q-primary: #916ece;   
+  --q-info: #70559e ;
+
+
 
   .q-item.dark-letter {
 
@@ -32,5 +35,8 @@
     }
 
   }
-  
+  .q-btn[color="accent"]{
+    color: var(--q-shadow-color);
+  }
+
 }

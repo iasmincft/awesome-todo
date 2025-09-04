@@ -62,4 +62,9 @@ const props = defineProps({
 .shadow-2 {
   box-shadow: 0px 0px 10px var(--q-secondary);
 }
+
+body.body--dark .shadow-2 {
+  box-shadow: 0px 0px 10px var(--q-secondary);
+}
+
 </style>
