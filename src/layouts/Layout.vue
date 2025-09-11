@@ -8,11 +8,21 @@
         </q-toolbar-title>
 
         <q-btn 
+          v-if="!authStore.loggedIn"
           color="info" 
           icon-right="person" 
           label="Login" 
           class="absolute-right q-ma-xs"
           to="/auth"  
+        />
+
+        <q-btn 
+          v-else
+          color="info" 
+          icon-right="person" 
+          label="Logout" 
+          class="absolute-right q-ma-xs"
+          @click="authStore.logoutUser()"
         />
 
 
@@ -53,6 +63,7 @@
 <script setup>
 import { ref } from 'vue'
 import EssentialLink from 'src/components/EssentialLink.vue'
+import { useAuthStore } from 'src/stores/auth';
 
 const linksList = [
   {
@@ -71,9 +82,8 @@ const linksList = [
 
 const leftDrawerOpen = ref(false)
 
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
+const authStore = useAuthStore();
+
 </script>
 
 <style>

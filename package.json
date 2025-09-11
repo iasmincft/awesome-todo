@@ -10,10 +10,12 @@
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build",
-    "postinstall": "quasar prepare"
+    "postinstall": "quasar prepare",
+    "icons": "icongenie generate -i public/icons/ladybugsticker.png"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
+    "firebase": "^12.2.1",
     "pinia": "^3.0.3",
     "quasar": "^2.16.0",
     "vue": "^3.4.18",

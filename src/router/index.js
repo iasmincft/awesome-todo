@@ -10,13 +10,14 @@ import routes from './routes'
  * async/await or return a Promise which resolves
  * with the Router instance.
  */
+let Router
 
 export default defineRouter(function (/* { store, ssrContext } */) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory)
 
-  const Router = createRouter({
+  const routerInstance = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
     routes,
 
@@ -26,5 +27,9 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
+  Router = routerInstance
+
   return Router
 })
+
+export { Router }

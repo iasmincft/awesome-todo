@@ -27,15 +27,8 @@
         />
       </div>
     </div>
-    <div class="absolute-bottom q-pa-lg q-pr-xl row items-center justify-end">
-        <div v-if="!tasksStore.tasksToDo.length && !tasksStore.search && !settingsStore.showSingleTable" class="row items-center q-mr-xl">
-          <div class="text-subtitle1 text-accent q-mr-l">
-            Plan something extraordinary
-          </div>
-          <q-icon name="keyboard_double_arrow_right" size="40px" color="accent" />
-        </div>
-      </div>
-    </q-banner>
+  </q-banner>
+    
   </transition-group>
 </template>
 

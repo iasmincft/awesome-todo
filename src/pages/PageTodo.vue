@@ -1,57 +1,71 @@
 <template>
   <q-page class="q-pa-md" style="padding-bottom:110px">
+    <div>
+      <template v-if="tasksStore.tasksDownloaded">
 
-    <div class="row justify-end q-gutter-md">
-      <SearchBar />
-      <Sort />
-    </div>
-
-    <div class="relative-position">
-      <NoTasks
-        v-if="
-      (
-        (!settingsStore.showSingleTable && tasksStore.tasksToDo.length === 0) ||
-        (settingsStore.showSingleTable && Object.keys(tasksStore.items).length === 0)
-      ) && !tasksStore.search
-    "
-        message="No tasks to do yet!"
-        @show-add-task="showAddTask = true">
-      </NoTasks> 
-
-      <NoTasks
-        v-if="tasksStore.search && Object.keys(tasksStore.items).length > 0 && tasksStore.tasksToDo.length === 0 && tasksStore.tasksCompleted.length === 0"
-        message="No tasks match your search."
-        @show-add-task="showAddTask = true">
-        
-      </NoTasks>
-
-      <template v-if="tasksStore.tasksToDo.length">
-        <TasksToDo 
-          :promptToDelete="promptToDelete"
-          :promptToEdit="promptToEdit"
-        />
-      </template>
-      
-    
-      <template v-if="tasksStore.tasksCompleted.length">
-        <div v-if="!settingsStore.showSingleTable" >
-          <hr>
+        <div class="row justify-end q-gutter-md">
+          <SearchBar />
+          <Sort />
         </div>
-        <TasksCompleted :promptToDelete="promptToDelete" />
+
+        <div class="relative-position">
+          <NoTasks v-if="
+            (
+              (!settingsStore.showSingleTable && tasksStore.tasksToDo.length === 0) ||
+              (settingsStore.showSingleTable && Object.keys(tasksStore.items).length === 0)
+            ) && !tasksStore.search
+          " message="No tasks to do yet!" @show-add-task="showAddTask = true">
+          </NoTasks>
+
+          <NoTasks
+            v-if="tasksStore.search && Object.keys(tasksStore.items).length > 0 && tasksStore.tasksToDo.length === 0 && tasksStore.tasksCompleted.length === 0"
+            message="No tasks match your search." @show-add-task="showAddTask = true">
+
+          </NoTasks>
+
+          <template v-if="tasksStore.tasksToDo.length">
+            <TasksToDo :promptToDelete="promptToDelete" :promptToEdit="promptToEdit" />
+          </template>
+
+
+          <template v-if="tasksStore.tasksCompleted.length">
+            <div v-if="!settingsStore.showSingleTable">
+              <hr>
+            </div>
+            <TasksCompleted :promptToDelete="promptToDelete" />
+          </template>
+        </div>
+
+        <div class="absolute-bottom text-right q-pa-lg ">
+          <div class="absolute-bottom q-pa-lg q-pr-xl row items-center justify-end">
+            <div v-if="!tasksStore.tasksToDo.length && !tasksStore.search && !settingsStore.showSingleTable"
+              class="row items-center q-mr-xl "
+              :class="settingsStore.darkMode ? 'bg-grey-3 q-pa-sm rounded-borders' : 'q-pa-sm'">
+              <div class="text-subtitle1 text-accent q-mr-l">
+                Plan something extraordinary
+              </div>
+              <q-icon name="keyboard_double_arrow_right" size="40px" color="accent" />
+            </div>
+          </div>
+          <q-btn @click="showAddTask = true" round dense color="primary" size="24px" icon="add" />
+        </div>
+
+        <q-dialog v-model="showAddTask">
+          <AddTask @close="showAddTask = false" />
+        </q-dialog>
+
+        <q-dialog v-model="showEditTask">
+          <EditTask :task="taskToEdit" @update-task="editTask" @close="showEditTask = false" />
+        </q-dialog>
+
+      </template>
+      <template v-else>
+        <span class="absolute-center">
+          <q-spinner-hourglass color="primary" size="3em" />
+        </span>
       </template>
     </div>
 
-    <div class="absolute-bottom text-right q-pa-lg ">
-      <q-btn @click="showAddTask = true" round dense color="primary" size="24px" icon="add" />
-    </div>
-
-    <q-dialog v-model="showAddTask">
-      <AddTask @close="showAddTask = false" />
-    </q-dialog>
-
-    <q-dialog v-model="showEditTask">
-      <EditTask :task="taskToEdit" @update-task="editTask" @close="showEditTask = false" />
-    </q-dialog>
 
   </q-page>
 </template>
@@ -117,12 +131,12 @@ const editTask = (updatedTask) => {
 </script>
 
 <style>
-
 .rounded-t-md {
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
 }
-  .q-list--bordered {
-   border: 1px solid rgba(0, 0, 0, 0.12);
+
+.q-list--bordered {
+  border: 1px solid rgba(0, 0, 0, 0.12);
 }
 </style>

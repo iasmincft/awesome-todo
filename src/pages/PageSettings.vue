@@ -87,6 +87,17 @@
   
         </q-list>
     </div>
+
+    
+    <div class="q-mt-xl">
+      <q-btn 
+        label="Exportar Meus Dados" 
+        icon="archive"
+        color="primary"
+        @click="exportData" 
+        unelevated 
+      />
+    </div>
   </q-page>
 </template>
 
@@ -127,6 +138,46 @@
   const visitOurWebsite = () => {
     openURL('https://github.com/iasmincft/awesome-todo');
   };
+
+
+
+
+  function exportData() {
+  // 1. Coleta todos os dados do LocalStorage em um único objeto JavaScript.
+  // Usamos 'reduce' para transformar o array de chaves em um objeto de chave/valor.
+  const dataToExport = Object.keys(localStorage).reduce((obj, key) => {
+    try {
+      // Tenta converter o valor de volta para JSON, se for o caso
+      obj[key] = JSON.parse(localStorage.getItem(key));
+    } catch (e) {
+      // Se não for um JSON válido, apenas pega o valor como string
+      obj[key] = localStorage.getItem(key);
+    }
+    return obj;
+  }, {});
+
+  // 2. Converte o objeto JavaScript em uma string JSON formatada (com indentação de 2 espaços).
+  const jsonString = JSON.stringify(dataToExport, null, 2);
+
+  // 3. Cria um Blob (um objeto tipo arquivo) com a string JSON.
+  const blob = new Blob([jsonString], { type: "application/json" });
+
+  // 4. Cria uma URL temporária para o Blob.
+  const url = URL.createObjectURL(blob);
+
+  // 5. Cria um elemento de link <a> invisível.
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "awesome_todo_data.json"; // Define o nome do arquivo
+
+  // 6. Adiciona o link ao corpo do documento e simula um clique para iniciar o download.
+  document.body.appendChild(link);
+  link.click();
+
+  // 7. Limpeza: remove o link e a URL temporária da memória.
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
 </script>
 
 <style>

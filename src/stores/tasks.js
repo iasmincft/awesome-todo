@@ -1,183 +1,165 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
-import { uid } from "quasar";
+import { ref, computed } from 'vue';
+import { useAuthStore } from './auth';
+import { db } from 'boot/firebase';
+import { ref as dbRef, onValue, set, remove, update, push, off } from 'firebase/database';
+import { Notify } from "quasar";
 
-// Objeto auxiliar com as funções de ordenação
+// Seu objeto de funções de ordenação continua o mesmo
 const sortFunctions = {
   'name-asc': (a, b) => a.name.localeCompare(b.name),
   'name-desc': (a, b) => b.name.localeCompare(a.name),
   'date-asc': (a, b) => {
-    // Prioridade 1: Mover tarefas sem data para o final da lista.
     if (!a.dueDate && !b.dueDate) return 0;
     if (!a.dueDate) return 1;
     if (!b.dueDate) return -1;
-
-    // Prioridade 2: Converter data e hora para comparação.
     const dateA = new Date(`${a.dueDate.split("/").reverse().join("-")}T${a.dueTime || '00:00'}`);
     const dateB = new Date(`${b.dueDate.split("/").reverse().join("-")}T${b.dueTime || '00:00'}`);
-
     return dateA - dateB;
   },
   'date-desc': (a, b) => {
-    // Prioridade 1: Mover tarefas sem data para o final da lista.
     if (!a.dueDate && !b.dueDate) return 0;
     if (!a.dueDate) return 1;
     if (!b.dueDate) return -1;
-    
-    // Prioridade 2: Converter data e hora para comparação.
     const dateA = new Date(`${a.dueDate.split("/").reverse().join("-")}T${a.dueTime || '00:00'}`);
     const dateB = new Date(`${b.dueDate.split("/").reverse().join("-")}T${b.dueTime || '00:00'}`);
-
     return dateB - dateA;
   },
 };
 
-export const useTasksStore = defineStore("tasks", {
-  state: () => {
-    let tasksFromLocalStorage = null;
-    try {
-      tasksFromLocalStorage = JSON.parse(
-        localStorage.getItem("awesome-todo-tasks")
-      );
-    } catch (e) {
-      console.error("Erro ao carregar tarefas do localStorage:", e);
+export const useTasksStore = defineStore("tasks", () => {
+  // === STATE ===
+  // 'items' agora é um ref vazio, preenchido pelo Firebase.
+  const items = ref({});
+  const search = ref('');
+  const sort = ref({ by: 'date', asc: true });
+  const tasksDownloaded = ref(false);
+
+  const authStore = useAuthStore();
+  let tasksListener; // Variável para guardar nosso "ouvinte" do Firebase
+
+  // === GETTERS (agora como 'computed') ===
+  const tasksAsArray = computed(() => {
+    return Object.entries(items.value).map(([id, task]) => ({ id, ...task }));
+  });
+
+  const tasksFiltered = computed(() => {
+    if (!search.value) return tasksAsArray.value;
+    const searchLowerCase = search.value.toLowerCase();
+    return tasksAsArray.value.filter(task => 
+      task.name.toLowerCase().includes(searchLowerCase)
+    );
+  });
+  
+  const tasksToDo = computed(() => {
+    const tasksUncompleted = tasksFiltered.value.filter(task => !task.completed);
+    const sortKey = `${sort.value.by}-${sort.value.asc ? 'asc' : 'desc'}`;
+    if (sortFunctions[sortKey]) {
+      tasksUncompleted.slice().sort(sortFunctions[sortKey]);
     }
-    return {
-      items: tasksFromLocalStorage,
-      search: '',
-      sort: {
-        by: 'date',
-        asc: true
-      }
-    };
-  },
-  getters: {
-     tasksToDo: (state) => {
-      if (!state.items) return []; // Retorna um array vazio se não houver tarefas
-      const tasksArray = Object.entries(state.items).map(([id, task]) => ({
-        id,
-        ...task,
-      }));
+    return tasksUncompleted;
+  });
 
-      const tasksFiltered = state.search ?
-        tasksArray.filter((task) => {
-          const taskNameLowerCase = task.name.toLowerCase();
-          const searchLowerCase = state.search.toLowerCase();
-          return taskNameLowerCase.includes(searchLowerCase);
-        }) : tasksArray;
+  const tasksCompleted = computed(() => {
+    const completed = tasksFiltered.value.filter(task => task.completed);
+    return completed.sort((a, b) => b.completedAt - a.completedAt); // Mais recentes primeiro
+  });
 
-      // Cria uma cópia do array para ordenar, garantindo que o array original não seja afetado.
-      const tasksUncompleted = [...tasksFiltered].filter((task) => !task.completed);
+  // === ACTIONS ===
+  const firebaseGetTasks = () => {
+    
+    if (authStore.user?.uid) {
+      const tasksPath = `tasks/${authStore.user.uid}`;
+      const tasksRef = dbRef(db, tasksPath);
+      // Ouve por mudanças em tempo real e atualiza o estado 'items'
+      tasksListener = onValue(tasksRef, (snapshot) => {
+        items.value = snapshot.val() || {};
+        tasksDownloaded.value = true;
+      }, (error) => {
+        console.error("Firebase onValue error:", error);
+        tasksDownloaded.value = true;
+      });
+    }
+  };
 
-      const sortKey = `${state.sort.by}-${state.sort.asc ? 'asc' : 'desc'}`;
+  const firebaseStopListening = () => {
+    if (tasksListener) {
+      tasksListener(); // Desliga o ouvinte
+      items.value = {}; // Limpa o estado
+      tasksDownloaded.value = false;
+    }
+  };
 
-      // Aplica a função de ordenação selecionada
-      if (sortFunctions[sortKey]) {
-        tasksUncompleted.sort(sortFunctions[sortKey]);
-      }
+  const addTask = (taskData) => {
+    if (taskData.name.trim() && authStore.user?.uid) {
+      const taskId = Date.now().toString(); // ID simples baseado em timestamp
+      const taskPath = `tasks/${authStore.user.uid}/${taskId}`;
+      set(dbRef(db, taskPath), {
+        name: taskData.name,
+        completed: false,
+        dueDate: taskData.dueDate || '',
+        dueTime: taskData.dueTime || ''
+      });
+    }
+  };
 
-      return tasksUncompleted;
-    },
-    // Getter corrigido para incluir o ID
-    tasksCompleted: (state) => {
-      if (!state.items) return []; // Retorna um array vazio se não houver tarefas
-      const tasksArray = Object.entries(state.items).map(([id, task]) => ({
-        id,
-        ...task,
-      }));
+  const updateTask = (updatedTask) => {
+    if (authStore.user?.uid && updatedTask.id) {
+      // Cria um objeto limpo para não salvar o 'id' dentro do objeto no Firebase
+      const taskPayload = { ...updatedTask };
+      delete taskPayload.id;
+      const taskPath = `tasks/${authStore.user.uid}/${updatedTask.id}`;
+      update(dbRef(db, taskPath), taskPayload);
+    }
+  };
 
-      const tasksFiltered = state.search ?
-        tasksArray.filter((task) => {
-          const taskNameLowerCase = task.name.toLowerCase();
-          const searchLowerCase = state.search.toLowerCase();
-          return taskNameLowerCase.includes(searchLowerCase);
-        }) : tasksArray;
+  const toggleCompleted = (taskId) => {
+    if (items.value[taskId] && authStore.user?.uid) {
+      const taskPath = `tasks/${authStore.user.uid}/${taskId}`;
+      const isCompleted = !items.value[taskId].completed;
+      update(dbRef(db, taskPath), {
+        completed: isCompleted,
+        completedAt: isCompleted ? new Date().getTime() : null
+      });
+    }
+  };
 
-      const completedTasks = tasksFiltered.filter((task) => task.completed);
-      
-      // Ordena as tarefas concluídas pelo carimbo de data/hora de conclusão
-      // A tarefa mais recente (maior timestamp) vai para o final da lista.
-      return completedTasks.sort((a, b) => a.completedAt - b.completedAt);
-    },
-  },
-  actions: {
-    saveToLocalStorage() {
-      localStorage.setItem("awesome-todo-tasks", JSON.stringify(this.items));
-      console.log("Estado da store salvo no localStorage.");
-    },
-    // Altera o status de conclusão da tarefa
-    toggleCompleted(id) {
-      if (this.items[id]) {
-        this.items[id].completed = !this.items[id].completed;
-        // Adiciona um timestamp quando a tarefa é concluída
-        if (this.items[id].completed) {
-          this.items[id].completedAt = new Date().getTime();
-        } else {
-          // Remove o timestamp se a tarefa for reaberta
-          delete this.items[id].completedAt;
-        }
-      } else {
-        console.warn(`Task with ID ${id} not found in store.`);
-      }
-      this.saveToLocalStorage();
-    },
-    // Deleta os itens da lista
-    deleteTask(id) {
-      console.log("tasks.js Store: deleteTask action chamada para ID:", id);
-      if (this.items[id]) {
-        delete this.items[id];
-        console.log(
-          "tasks.js Store: Tarefa excluída. Estado atualizado:",
-          this.items
-        );
-      } else {
-        console.warn(
-          `tasks.js Store: Tentativa de excluir tarefa inexistente com ID ${id}.`
-        );
-      }
-      this.saveToLocalStorage();
-    },
-    // Adiciona novos itens na lista
-    addTask(taskData) {
-      if (taskData.name.trim()) {
-        const newId = uid();
-        this.items[newId] = {
-          name: taskData.name,
-          completed: false,
-          dueDate: taskData.dueDate,
-          dueTime: taskData.dueTime,
-        };
-        this.saveToLocalStorage();
-      }
-    },
-    updateTask(updatedTask) {
-      if (this.items[updatedTask.id]) {
-        this.items[updatedTask.id] = {
-          name: updatedTask.name,
-          completed: updatedTask.completed,
-          dueDate: updatedTask.dueDate,
-          dueTime: updatedTask.dueTime,
-        };
-        this.saveToLocalStorage();
-      } else {
-        console.warn(`Task with ID ${updatedTask.id} not found.`);
-      }
-    },
-    setSearch(value) {
-      console.log('Value', value);
-      this.search = value;
-    },
-    setSort(sortBy) {
-      // Se clicou no mesmo critério, apenas inverte a direção
-      if (this.sort.by === sortBy) {
-        this.sort.asc = !this.sort.asc;
-      } 
-      // Se clicou em um novo critério, muda para ele e reseta a direção para ascendente
-      else {
-        this.sort.by = sortBy;
-        this.sort.asc = true;
-      }
-    },
-  },
+  const deleteTask = (taskId) => {
+    if (authStore.user?.uid) {
+      const taskPath = `tasks/${authStore.user.uid}/${taskId}`;
+      remove(dbRef(db, taskPath));
+    }
+  };
+
+  const setSearch = (value) => {
+    search.value = value;
+  };
+
+  const setSort = (sortBy) => {
+    if (sort.value.by === sortBy) {
+      sort.value.asc = !sort.value.asc;
+    } else {
+      sort.value.by = sortBy;
+      sort.value.asc = true;
+    }
+  };
+
+  return {
+    items,
+    search,
+    sort,
+    tasksToDo,
+    tasksCompleted,
+    tasksDownloaded,
+    firebaseGetTasks,
+    firebaseStopListening,
+    addTask,
+    updateTask,
+    toggleCompleted,
+    deleteTask,
+    setSearch,
+    setSort
+  };
 });
 
 if (import.meta.hot) {
