@@ -6,7 +6,7 @@
         <q-toolbar-title class="absolute-center">
           Awesome To-Do
         </q-toolbar-title>
-
+        <div v-if="authStore.loggedIn">
         <q-btn 
           v-if="!authStore.loggedIn"
           color="info" 
@@ -24,12 +24,12 @@
           class="absolute-right q-ma-xs"
           @click="authStore.logoutUser()"
         />
-
+          </div>
 
       </q-toolbar>
     </q-header>
 
-    <q-footer>
+    <q-footer v-if="authStore.loggedIn">
       <q-tabs>
         <q-route-tab 
           v-for="link in linksList" 
@@ -42,6 +42,7 @@
     </q-footer>
 
     <q-drawer 
+      v-if="authStore.loggedIn"
       v-model="leftDrawerOpen" 
       :width="250" 
       show-if-above bordered class="bg-primary">

@@ -12,16 +12,18 @@
           <div class="text-h5">Welcome to Awesome Todo</div>
           <p class="text-subtitle2 text-grey-7 q-ma-none">Keep track of your tasks anywhere.</p>
         </div>
-        <div class="row items-center q-gutter-x-sm">
-          <q-space />
-          <span class="text-grey-8">{{ toggleMessage }}</span>
-          <q-btn 
-            :label="toggleButtonLabel"
-            @click="tab = (tab === 'login' ? 'register' : 'login')"
-            color="secondary"
-            dense
-            padding="5px 12px"
-          />
+
+        <div class="row justify-center q-mt-md">
+          <div class="row items-center q-gutter-x-sm">
+            <span class="text-grey-8">{{ toggleMessage }}</span>
+            <q-btn 
+              :label="toggleButtonLabel"
+              @click="tab = (tab === 'login' ? 'register' : 'login')"
+              color="secondary"
+              dense
+              padding="5px 12px"
+            />
+          </div>
         </div>
       </div>
     
