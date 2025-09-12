@@ -2,8 +2,14 @@
   <q-page class="q-pa-md" style="padding-bottom:110px">
     <div>
       <template v-if="tasksStore.tasksDownloaded">
-
-        <div class="row justify-end q-gutter-md">
+        <div class="row justify-end q-gutter-md items-center q-pl-md">
+          <q-img 
+            src="/public/icons/ladybugstickersecondary.png" 
+            class="q-mb-md" 
+            alt="Awesome ToDo Logo"
+            style="width: 50px; height: 50px;"
+          />
+          <q-space />
           <SearchBar />
           <Sort />
         </div>

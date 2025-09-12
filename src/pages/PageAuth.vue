@@ -3,6 +3,12 @@
   <q-page class="q-pa-lg">
       <div class="column  q-mb-md">
         <div class="items-center justify-center text-center q-mb-md">
+          <q-img 
+            src="/public/icons/ladybugstickersecondary.png" 
+            class="q-mb-md " 
+            alt="Awesome ToDo Logo"
+            style="width: 150px; height: 150px;"
+          />
           <div class="text-h5">Welcome to Awesome Todo</div>
           <p class="text-subtitle2 text-grey-7 q-ma-none">Keep track of your tasks anywhere.</p>
         </div>
@@ -12,7 +18,7 @@
           <q-btn 
             :label="toggleButtonLabel"
             @click="tab = (tab === 'login' ? 'register' : 'login')"
-            color="info"
+            color="secondary"
             dense
             padding="5px 12px"
           />

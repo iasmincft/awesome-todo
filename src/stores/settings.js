@@ -7,7 +7,7 @@ function loadSettings() {
   const defaults = {
     showLongDate: false,
     showSingleTable: false,
-    darkMode: false,
+    darkMode: true,
   };
 
   if (settings) {
