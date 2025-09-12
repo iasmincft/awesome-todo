@@ -9,7 +9,7 @@
       v-if="tasksStore.tasksToDo.length" 
     >
       <q-banner 
-        class="bg-secondary text-white rounded-t-md"
+        class="bg-secondary text-white rounded-t-md q-pt-sm"
       >
         Tasks To-Do
       </q-banner>

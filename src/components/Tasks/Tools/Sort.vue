@@ -8,6 +8,7 @@
       @update:model-value="handleSelect"
       emit-value
       map-options
+      class="q-pb-sm"
     >
       <template v-slot:selected-item>
         <div class="row items-center no-wrap full-width">
