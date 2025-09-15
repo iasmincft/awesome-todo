@@ -4,7 +4,7 @@
       <div class="column  q-mb-md">
         <div class="items-center justify-center text-center q-mb-md">
           <q-img 
-            src="/icons/ladybugstickersecondary.png" 
+            src="/public/icons/ladybugstickersecondary.png" 
             class="q-mb-md" 
             alt="Awesome ToDo Logo"
             style="width: 150px; height: 150px;"
@@ -12,7 +12,7 @@
           <div class="text-h5">Welcome to Awesome Todo</div>
           <p class="text-subtitle2 text-grey-7 q-ma-none">Keep track of your tasks anywhere.</p>
         </div>
-
+        
         <div class="row justify-center q-mt-md">
           <div class="row items-center q-gutter-x-sm">
             <span class="text-grey-8">{{ toggleMessage }}</span>
