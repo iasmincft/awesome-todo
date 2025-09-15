@@ -18,6 +18,8 @@ async function createWindow () {
     icon: path.resolve(currentDir, 'icons/icon.png'), // tray icon
     width: 1000,
     height: 600,
+    minWidth: 500,
+    minHeight: 500,
     useContentSize: true,
     webPreferences: {
       contextIsolation: true,
@@ -53,13 +55,7 @@ async function createWindow () {
 app.whenReady().then(createWindow)
 
 app.on('window-all-closed', () => {
-  if (platform !== 'darwin') {
     app.quit()
-  }
 })
 
-app.on('activate', () => {
-  if (mainWindow === null) {
-    createWindow()
-  }
-})
+
