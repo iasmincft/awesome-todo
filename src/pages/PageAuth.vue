@@ -4,7 +4,7 @@
       <div class="column  q-mb-md">
         <div class="items-center justify-center text-center q-mb-md">
           <q-img 
-            src="/public/icons/ladybugstickersecondary.png" 
+            src="/icons/ladybugstickersecondary.png" 
             class="q-mb-md" 
             alt="Awesome ToDo Logo"
             style="width: 150px; height: 150px;"
